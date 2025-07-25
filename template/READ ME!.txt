@@ -1,0 +1,93 @@
+hey, if you’re reading this, you probably want to make your own cursor. so let's get this shit done!!!
+what you’ll need:
+    - Don’t Starve Mod Tools (look up how to install it if you don’t have it, there's some really good guides out there)
+    - an IDE (notepad++, visual studio code, whatever you’re comfy with)
+    - an image editor (photopea, gimp, paint.net - just don't pay adobe for photoshop/photoSHIT https://www.youtube.com/watch?v=MqeKwKSq07g)
+    - a bit of lua knowledge
+    - a lot, LOT of patience
+
+[[ PREPARING TO MAKE A CURSOR ]]
+
+i’ve included an example cursor as a base, it’s called blood_ice.
+
+for the artwork:
+    • as long as you stick to the same resolution, you can draw it however you want!
+    • we’ll set the hotspots later, so don’t worry too much about that yet.
+    • the blood_ice cursor gives you a good sense of how much space you’ve got to work with.
+
+tip: if you’re making multiple scales, start at 96x96. you can scale it down and adjust as needed instead of redrawing everything for every size.
+
+you’ll need these cursor states:
+    • normal → resting/default
+    • examine → when hovering over something you can look at but not interact with
+    • -clickable → when hovering over something you can interact with
+    • drop → when you’re holding something
+    • attack → when you’re hovering over something you can attack
+
+[[ USING THE TEMPLATES ]]
+
+once you’ve got your drawings ready, open either cursor_bloody_ice.scml or cursor_bloody_ice_scale.scml.
+    • use the first if you’re providing textures for all scales and states.
+    • use the second if you have all states but don’t want to export every scale.
+
+these are just templates -- you don’t have to use them, but they’re there if they help make things easier :]
+
+[[ MAKING THE CURSOR ]]
+
+let's do this
+    1. open spriter and set the root folder to where your cursor images are.
+
+    2. on the right, you’ll see a list of your sprites.
+    drag in the five states for the largest scale. doesn’t matter where you drop them — we can clean that up later.
+    i recommend spacing them out a bit to make selection easier.
+
+    3. select a sprite and drag the little white dot to where you want the cursor to “point”, this'll serve as our hotspot.
+    this sets the offset the cursor will draw from.
+    on the left, set x = 0 and y = 0 to center it.
+
+    4. right-click the white dot and choose overwrite default pivot — this makes sure the compiler grabs the right hotspot.
+
+    5. repeat for all sprites. when you’re done, they should all stack neatly on top of each other. don't worry, it's intended!
+
+inside your animation, set up five layers named exactly like so:
+    • _attack
+    • _clickable
+    • _drop
+    • _examine
+    • _normal
+
+important: name them exactly like this, or the game won’t hide/show layers properly, and you’ll end up with an amalgamation of cursors!
+
+[[ TIP FOR MULTIPLE SCALES ]]
+
+once you’ve set the pivot points for the largest scale:
+    • go to the right menu in spriter.
+    • use the copy pivot (icon with two papers) on the large sprite.
+    • select the matching smaller sprite, hold ctrl, and select all the smaller versions.
+    • use paste pivot (clipboard + paper icon).
+
+this saves you from having to redo hotspots for every sprite at every size.
+
+your animation should look something like:
+
+• custom_cursor (entity, named exactly after your cursor)
+→ custom_cursor_96 (scale 96 animation)
+→ custom_cursor_80 (scale 80 animation)
+→ etc. (all other scales)
+
+for each scale, just duplicate the previous one and right-click + hold on the sprites you want to swap, then pick the lower-scale version from the menu.
+it’s tedious, i know.
+
+[[ COMPILING THE CURSOR ]]
+
+i’ve provided a small batch file for convenience.
+
+if you have Don’t Starve Mod Tools installed, just drag and drop your .scml file onto the batch file.
+it’ll compile your cursor into the anim folder, and inside, you’ll find your .zip. now it’s ready to use in your mod!
+
+[[ USING THE CURSOR ]]
+
+the example mod i included should show you pretty much everything you need.
+you could hook into the cursor system differently, but honestly, i’m too lazy to rewrite this guide for that.
+
+hope this helps! have fun making your cursor :]
