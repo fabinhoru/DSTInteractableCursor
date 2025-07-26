@@ -1,4 +1,4 @@
-![workshopicon](https://github.com/user-attachments/assets/731d1a49-31f3-414d-b97a-3943bcdc374b)
+![workshopicon](https://github.com/user-attachments/assets/16a678cd-88a2-4b0c-af85-a9d5a302f603)
 
 # Interactable Cursor
 The public repository of Interactable Cursor, a mod for Don't Starve Together.
