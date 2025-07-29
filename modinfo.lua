@@ -1,7 +1,7 @@
 name = "Interactable Cursor"
 author = "fabinhoru"
 
-actual_version = "1.9b" -- changing things around for easier maintenance
+actual_version = "1.9b1" -- changing things around for easier maintenance
 version_description = " - Tidying Up!"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3399184840" -- does this work?
 

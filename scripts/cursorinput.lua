@@ -9,7 +9,8 @@ function CursorInput:FollowMouse2()
     if not cursor.follow_handler then
         if not cfg.cursor_wobbly then
             cursor.follow_handler = TheInput:AddMoveHandler(function(x, y)
-                cursor:SetPosition(TheInputProxy:GetOSCursorPos())
+				local cursor_pos = Vector3(TheInputProxy:GetOSCursorPos()) or Vector3(x, y, 0)
+                cursor:SetPosition(cursor_pos:Get())
                 TheInputProxy:SetCursorVisible(false)
             end)
             return
@@ -46,6 +47,7 @@ function CursorInput:FollowMouse2()
 		end
 
 		cursor.follow_handler = TheInput:AddMoveHandler(function(x, y)
+			local cursor_pos = Vector3(TheInputProxy:GetOSCursorPos()) or Vector3(x, y, 0)
 			local r = cursor.rot
 			if r.last_x and r.last_y then
 				local dx, dy = x - r.last_x, y - r.last_y				-- gets the distance between positions	
@@ -58,7 +60,7 @@ function CursorInput:FollowMouse2()
 			end
 
 			r.last_x, r.last_y = x, y
-			cursor:SetPosition(x + 2, y - 2)
+			cursor:SetPosition(cursor_pos:Get())
 			TheInputProxy:SetCursorVisible(false)
 		end)
 

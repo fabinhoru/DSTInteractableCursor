@@ -183,15 +183,17 @@ CursorEffects["werecurses"] = {
 		cursor.state._goose = false
 		cursor.state._moose = false
 		
-		local OldGetCurrentAction = cursor.handler.GetCurrentAction
-		cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS) -- wrapping the function to add extra checks
-			local wereform = cfg.cursor_bank == "woodie" and ThePlayer and ThePlayer.prefab == "woodie" and (
-				ThePlayer:HasTag("beaver") and "_beaver" or
-				ThePlayer:HasTag("weregoose") and "_goose" or
-				ThePlayer:HasTag("weremoose") and "_moose"
-			) or nil
-			if wereform then return wereform end
-			return OldGetCurrentAction(self, cfg, ACTIONS)
+		if cfg.character_effects then -- ugh, this is a hole i dug myself in
+			local OldGetCurrentAction = cursor.handler.GetCurrentAction
+			cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS) -- wrapping the function to add extra checks
+				local wereform = cfg.cursor_bank == "woodie" and ThePlayer and ThePlayer.prefab == "woodie" and (
+					ThePlayer:HasTag("beaver") and "_beaver" or
+					ThePlayer:HasTag("weregoose") and "_goose" or
+					ThePlayer:HasTag("weremoose") and "_moose"
+				) or nil
+				if wereform then return wereform end
+				return OldGetCurrentAction(self, cfg, ACTIONS)
+			end
 		end
 		cursor.handler:ChangeCursorState(cursor.cfg.base_action, cursor.state) 
 		
@@ -241,25 +243,27 @@ CursorEffects["delinquent"] = {
 CursorEffects["pyrocaster"] = {
 	InitOnce = true,
 	fn_init = function(cursor)
-		local OldGetCurrentAction = cursor.handler.GetCurrentAction
-		local scale = {_32 = .333, _48 = .5, _64 = .667, _80 = .833, _96 = 1}
-		cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS)
-			local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
-			if rmb and rmb.action.str == STRINGS.ACTIONS.CASTAOE then -- i believe having a unique widget behind the "clickable" hand is the best way to go about this here
-				cursor.fx = cursor.fx or CreateFX(cursor, "willow_fire", "cursor_willow_fx", "cursor_willow_fx_fire", false)
-				if not cursor.fx:GetAnimState():IsCurrentAnimation("fx_fire") then 
-					cursor.fx:GetAnimState():PlayAnimation("fx_fire", true) 
-					cursor.fx:SetScale(scale[cursor.cfg.cursor_scl] or 1)
-					cursor.fx.inst:DoPeriodicTask(FRAMES, function()
-						UpdateFXCC(cursor, cursor.fx)
-					end)
+		if cfg.character_effects then
+			local OldGetCurrentAction = cursor.handler.GetCurrentAction
+			local scale = {_32 = .333, _48 = .5, _64 = .667, _80 = .833, _96 = 1}
+			cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS)
+				local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
+				if rmb and rmb.action.str == STRINGS.ACTIONS.CASTAOE then -- i believe having a unique widget behind the "clickable" hand is the best way to go about this here
+					cursor.fx = cursor.fx or CreateFX(cursor, "willow_fire", "cursor_willow_fx", "cursor_willow_fx_fire", false)
+					if not cursor.fx:GetAnimState():IsCurrentAnimation("fx_fire") then 
+						cursor.fx:GetAnimState():PlayAnimation("fx_fire", true) 
+						cursor.fx:SetScale(scale[cursor.cfg.cursor_scl] or 1)
+						cursor.fx.inst:DoPeriodicTask(FRAMES, function()
+							UpdateFXCC(cursor, cursor.fx)
+						end)
+					end
+					return "_clickable" -- don't need a new state for this
+				elseif cursor.fx then 
+					cursor.fx:Kill() 
+					cursor.fx = nil 
 				end
-				return "_clickable" -- don't need a new state for this
-			elseif cursor.fx then 
-				cursor.fx:Kill() 
-				cursor.fx = nil 
+				return OldGetCurrentAction(self, cfg, ACTIONS)
 			end
-			return OldGetCurrentAction(self, cfg, ACTIONS)
 		end
 		
 		CursorEffects.Dirty = true
@@ -269,25 +273,27 @@ CursorEffects["pyrocaster"] = {
 CursorEffects["shadowcaster"] = {
 	InitOnce = true,
 	fn_init = function(cursor)
-		local OldGetCurrentAction = cursor.handler.GetCurrentAction
-		local scale = {_32 = .333, _48 = .5, _64 = .667, _80 = .833, _96 = 1}
-		cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS)
-			local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
-			if rmb and rmb.action.str == STRINGS.ACTIONS.CASTAOE then
-				cursor.fx = cursor.fx or CreateFX(cursor, "maxwell_shadow_fire", "cursor_willow_fx", "cursor_willow_fx_fire", false)
-				if not cursor.fx:GetAnimState():IsCurrentAnimation("fx_fire") then -- hurgh, i'm gonna throw up...
-					cursor.fx:GetAnimState():PlayAnimation("fx_fire", true) 
-					cursor.fx:GetAnimState():OverrideMultColour(0, 0, 0, 0.5)
-					cursor.fx:GetAnimState():UsePointFiltering(false)
-					cursor.fx:SetScale(scale[cursor.cfg.cursor_scl] or 1)
-					UpdateFXCC(cursor, cursor.fx)
+		if cfg.character_effects then
+			local OldGetCurrentAction = cursor.handler.GetCurrentAction
+			local scale = {_32 = .333, _48 = .5, _64 = .667, _80 = .833, _96 = 1}
+			cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS)
+				local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
+				if rmb and rmb.action.str == STRINGS.ACTIONS.CASTAOE then
+					cursor.fx = cursor.fx or CreateFX(cursor, "maxwell_shadow_fire", "cursor_willow_fx", "cursor_willow_fx_fire", false)
+					if not cursor.fx:GetAnimState():IsCurrentAnimation("fx_fire") then -- hurgh, i'm gonna throw up...
+						cursor.fx:GetAnimState():PlayAnimation("fx_fire", true) 
+						cursor.fx:GetAnimState():OverrideMultColour(0, 0, 0, 0.5)
+						cursor.fx:GetAnimState():UsePointFiltering(false)
+						cursor.fx:SetScale(scale[cursor.cfg.cursor_scl] or 1)
+						UpdateFXCC(cursor, cursor.fx)
+					end
+					return "_clickable"
+				elseif cursor.fx then 
+					cursor.fx:Kill() 
+					cursor.fx = nil 
 				end
-				return "_clickable"
-			elseif cursor.fx then 
-				cursor.fx:Kill() 
-				cursor.fx = nil 
+				return OldGetCurrentAction(self, cfg, ACTIONS)
 			end
-			return OldGetCurrentAction(self, cfg, ACTIONS)
 		end
 		
 		CursorEffects.Dirty = true
@@ -298,14 +304,16 @@ CursorEffects["engineer"] = {
 	InitOnce = true,
 	fn_init = function(cursor)
 		cursor.state._cast = false
-	
-		local OldGetCurrentAction = cursor.handler.GetCurrentAction
-		cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS)
-			local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
-			if rmb and rmb.action.str == STRINGS.ACTIONS.CASTAOE then return "_cast" end
-			return OldGetCurrentAction(self, cfg, ACTIONS)
+		
+		if cfg.character_effects then
+			local OldGetCurrentAction = cursor.handler.GetCurrentAction
+			cursor.handler.GetCurrentAction = function(self, cfg, ACTIONS)
+				local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
+				if rmb and rmb.action.str == STRINGS.ACTIONS.CASTAOE then return "_cast" end
+				return OldGetCurrentAction(self, cfg, ACTIONS)
+			end
+			cursor.handler:ChangeCursorState(cursor.cfg.base_action, cursor.state) 
 		end
-		cursor.handler:ChangeCursorState(cursor.cfg.base_action, cursor.state) 
 		
 		CursorEffects.Dirty = true
 	end
