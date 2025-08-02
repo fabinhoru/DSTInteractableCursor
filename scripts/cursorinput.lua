@@ -2,16 +2,16 @@ local CursorInput = Class(function(self, cursor)
 	self.cursor = cursor
 end)
 
-function CursorInput:FollowMouse2()
+function CursorInput:FollowMouse()
 	local cursor = self.cursor
 	local cfg = cursor.cfg
 	
     if not cursor.follow_handler then
         if not cfg.cursor_wobbly then
-            cursor.follow_handler = TheInput:AddMoveHandler(function(x, y)
-				local cursor_pos = Vector3(TheInputProxy:GetOSCursorPos()) or Vector3(x, y, 0)
+            cursor.follow_handler = _G.TheInput:AddMoveHandler(function(x, y)
+				local cursor_pos = Vector3(_G.TheInputProxy:GetOSCursorPos()) or Vector3(x, y, 0)
                 cursor:SetPosition(cursor_pos:Get())
-                TheInputProxy:SetCursorVisible(false)
+                _G.TheInputProxy:SetCursorVisible(false)
             end)
             return
         end
@@ -46,8 +46,8 @@ function CursorInput:FollowMouse2()
 			return math.abs(new_current) < 0.01 and 0 or math.floor(new_current * 100) / 100, decayed_target -- clamp it to 0 instead of a huge fucking number
 		end
 
-		cursor.follow_handler = TheInput:AddMoveHandler(function(x, y)
-			local cursor_pos = Vector3(TheInputProxy:GetOSCursorPos()) or Vector3(x, y, 0)
+		cursor.follow_handler = _G.TheInput:AddMoveHandler(function(x, y)
+			local cursor_pos = Vector3(_G.TheInputProxy:GetOSCursorPos()) or Vector3(x, y, 0)
 			local r = cursor.rot
 			if r.last_x and r.last_y then
 				local dx, dy = x - r.last_x, y - r.last_y				-- gets the distance between positions	
@@ -61,7 +61,7 @@ function CursorInput:FollowMouse2()
 
 			r.last_x, r.last_y = x, y
 			cursor:SetPosition(cursor_pos:Get())
-			TheInputProxy:SetCursorVisible(false)
+			_G.TheInputProxy:SetCursorVisible(false)
 		end)
 
         cursor.inst:DoPeriodicTask(FRAMES, function()
@@ -79,7 +79,7 @@ function CursorInput:MakeClicky()
 
     local is_button_down = false
 
-    cursor.mouse_handler = TheInput:AddMouseButtonHandler(function(button, down)
+    cursor.mouse_handler = _G.TheInput:AddMouseButtonHandler(function(button, down)
         if button ~= MOUSEBUTTON_LEFT and button ~= MOUSEBUTTON_RIGHT then return end
         local scale = cfg.cursor_scl_mult
         local lefty = cfg.cursor_lefty and -scale or scale
@@ -89,13 +89,12 @@ function CursorInput:MakeClicky()
         local MakeClickSound = function()
             if cfg.clicky_cursor then
                 local click = "cursor_mod/cursor_mod/click_" .. (down and "down" or "up") .. (cfg.clicky_cursor_soft and "_soft" or "")
-                TheFrontEnd:GetSound():PlaySoundWithParams(click, { volume = cfg.clicky_cursor_volume })
+                _G.TheFrontEnd:GetSound():PlaySoundWithParams(click, { volume = cfg.clicky_cursor_volume })
             end
         end
 		local PlayClickEffect = function()
 			if cfg.character_effects then
 				local effect = cursor.effects:PlayClickEffect()
-				if effect then effect(cursor) end
 			end
 		end
 

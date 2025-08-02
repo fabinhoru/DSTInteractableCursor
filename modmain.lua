@@ -24,9 +24,8 @@ Assets = {
 	--	look at that, clean assets! honestly thank god i don't have to do cursor offsets when using anims now. much, much better
 }
 
-local custom_cursor_enabled = GetModConfigData("cursortexture") ~= 0
-
-cursor = nil
+local cursor_enabled = GetModConfigData("cursorbank") ~= 0
+_G.cursor = nil
 _G.TheInteractableCursor = { -- so i don't pollute GLOBAL
 	Cursor = require "cursor",
 	CursorCharacters = require "cursorcharacters", -- stores character values now. mostly useless, now that cursor offsets are gone for good
@@ -37,15 +36,16 @@ _G.TheInteractableCursor = { -- so i don't pollute GLOBAL
 }
 
 local function TryCursorInit()
-	TheInputProxy:SetCursorVisible(true)
-    local c = TheInteractableCursor.CursorHandler:CheckValidity() and TheFrontEnd.overlayroot:AddChild(TheInteractableCursor.Cursor())
+	_G.TheInputProxy:SetCursorVisible(true)
+    local c = _G.TheInteractableCursor.CursorHandler:CheckValidity() and _G.TheFrontEnd.overlayroot:AddChild(TheInteractableCursor.Cursor())
     if c then 
 		cursor = c 
 		cursor:MoveToFront()
+		if cursor.cfg.options_panel then modimport("scripts/cursoroptionspanel.lua") end
     else scheduler:ExecuteInTime(0.1, TryCursorInit) end
 end
 
-if not TheNet:IsDedicated() or not TheNet:GetServerIsDedicated() then
+if cursor_enabled and not TheNet:IsDedicated() or not TheNet:GetServerIsDedicated() then
     scheduler:ExecuteInTime(0, TryCursorInit)
 end
 
@@ -73,19 +73,19 @@ _G.SetCursorStyle = function(style, scale)
 	
 	cursor:GetAnimState():SetBankAndPlayAnimation(cfg.cursor_bank, cfg.cursor_bank..cfg.cursor_scl)
 	
-	local effects = cursor.effects.EffectMaps
-	if effects[cfg.cursor_bank] then cursor.effects:ApplyEffect() end
+	local effects = cursor.effects.fx_maps
+	if effects[cfg.cursor_bank] then cursor.effects:InitEffect() end
 end
 
 _G.SetCursorCharacterOverride = function(character, style)
 	assert(type(character) == "string", "[INTERACTABLE CURSOR] character prefab must be a string. (e.g. \"wx78\", \"wathgrithr\")")
     assert(type(style) == "string", "[INTERACTABLE CURSOR] style must be a string (e.g. \"wx\", 'curly\")")
 
-	GetCursorCharacterConfig()[character] = style
+	_G.GetCursorCharacterConfig()[character] = style
 end
 
 _G.SetCursorBuild = function(build)
-	GetCursorModConfig().cursor_build = build
+	_G.GetCursorModConfig().cursor_build = build
 end
 
 _G.SetCursorCustomOverride = function(build, bank, specific_scale, scale)
@@ -94,7 +94,7 @@ _G.SetCursorCustomOverride = function(build, bank, specific_scale, scale)
 	cfg.last_bank = bank
 	cfg.base_bank = bank
 	cfg.cursor_scl = specific_scale and scale or cfg.cursor_scl
-	SetCursorBuild(build)
+	_G.SetCursorBuild(build)
 	
 	if cfg.cursor_shadow then
 		GetCursor().shadow:GetAnimState():SetBuild(cfg.cursor_build)

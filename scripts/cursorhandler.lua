@@ -8,7 +8,7 @@ end)
 -- [[ CORE FUNCTIONS 'N SHIT ]] --
 
 function CursorHandler:CheckValidity() -- hope and pray to whatever god you worship that this thingamabob doesn't fucking explode because of a stack overflow
-    return (LastUIRoot and LastUIRoot:IsValid()) and TheFrontEnd and TheFrontEnd.overlayroot and TheFrontEnd.overlayroot.inst and TheFrontEnd.overlayroot.inst:IsValid()
+    return (_G.LastUIRoot and _G.LastUIRoot:IsValid()) and _G.TheFrontEnd and _G.TheFrontEnd.overlayroot and _G.TheFrontEnd.overlayroot.inst and _G.TheFrontEnd.overlayroot.inst:IsValid()
 end
 
 function CursorHandler:Init()
@@ -29,8 +29,8 @@ function CursorHandler:Init()
     anim:SetDefaultEffectHandle(cfg.cc_default) -- here so color cubes don't try and apply in the main menu, and also to reset it when coming from a game to main menu
     anim:UsePointFiltering(use_pointfilter) -- otherwise it looks blurry as shit when using anim banks. i spent hours looking for something like this, lol
 
-	cursor.effects:ApplyEffect()
-	cursor.input:FollowMouse2()
+	cursor.effects:InitEffect()
+	cursor.input:FollowMouse()
     cursor.input:MakeClicky()
     self:ChangeCursorState(cursor.cfg.default_action, cursor.state)
 	TheInputProxy:SetCursorVisible(false) -- is this necessary?
@@ -43,7 +43,7 @@ end
 function CursorHandler:GetCurrentAction(cfg, ACTIONS)
     if not ThePlayer or not ThePlayer:IsValid() then return "_normal" end
 
-    local widget = TheFrontEnd:GetFocusWidget()
+    local widget = _G.TheFrontEnd:GetFocusWidget()
     local lmb = ThePlayer.components.playercontroller:GetLeftMouseAction()
     local rmb = ThePlayer.components.playercontroller:GetRightMouseAction()
 
@@ -154,7 +154,7 @@ function CursorHandler:SetupDebug()
     }
 	local scales = { --[["_32", "_48", "_64", "_80", "_96"]] }
     local states = {}
-	CursorHandler.DebugFunction = "print(TheFrontEnd:GetFocusWidget()) print(TheFrontEnd:GetFocusWidget().parent) print(TheFrontEnd:GetFocusWidget().parent.name)"
+	CursorHandler.DebugFunction = "print(_G.TheFrontEnd:GetFocusWidget()) print(_G.TheFrontEnd:GetFocusWidget().parent) print(_G.TheFrontEnd:GetFocusWidget().parent.name)"
 
 	local config, temp = KnownModIndex:GetModConfigurationOptions_Internal(KnownModIndex:GetModActualName("Interactable Cursor"), false) -- admitedly, i feel stupid for not looking at modutil.lua to learn that i could do this...
 	if config and type(config) == "table" then 
@@ -208,7 +208,7 @@ function CursorHandler:SetupDebug()
 			TheNet:SendRemoteExecute(CursorHandler.DebugFunction)
 			--TheNet:SendRemoteExecute("print(GetCursor())")
 			--TheNet:SendRemoteExecute("print(ThePlayer)")
-			--TheNet:SendRemoteExecute("print(TheFrontEnd:GetActiveScreen())")
+			--TheNet:SendRemoteExecute("print(_G.TheFrontEnd:GetActiveScreen())")
         end
 	end)	
 	

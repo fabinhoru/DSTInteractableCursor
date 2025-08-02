@@ -22,7 +22,6 @@ local Cursor = Class(UIAnim, function(self)
 	self.current_action = nil -- current action's in here now, because it makes more sense to me
 	
 	self:SetClickable(false)
-	self:MoveToFront()
 	
 	self.characters = CursorCharacters
 	self.input = CursorInput(self) -- cursor gets passed onto the class, so every function inherits it, which means i can access it without passing it everywhere!
@@ -75,7 +74,9 @@ function Cursor:LoadDefaultConfigs()
 
 		cursor_wobbly = getcfg("cursorwobbly"),
 		cursor_shadow = getcfg("cursorshadow"),
+		
 		debug = getcfg("cursordebugmode"),
+		options_panel = getcfg("cursoroptionspanel")
 	}
 	
 	cfg.last_action = cfg.default_action
@@ -99,8 +100,7 @@ function Cursor:OnWallUpdate()
 			cfg.last_bank, cfg.cursor_bank = cfg.base_bank, cfg.base_bank
 			ch:SetCursorStyle(cfg.cursor_bank, cfg.cursor_scl)
 			ch:ChangeCursorState(cfg.base_action, self.state)
-			effects["clean"].fn_update(self) -- to "clean" the cursor of effects when entering screens
-			effects:ApplyEffect()
+			if effects.fx_maps[cfg.cursor_bank] then effects:InitEffect() end
 		end
 		return 	
 	end
@@ -121,19 +121,19 @@ function Cursor:OnWallUpdate()
 		if new_cursor_bank ~= cfg.last_bank then
 			print("[INTERACTABLE CURSOR] changing cursor bank to:", new_cursor_bank, new_cursor_anim)
 			cfg.last_bank = new_cursor_bank
+			cfg.cursor_bank = new_cursor_bank
+			cfg.cursor_anim = new_cursor_anim
+			cfg.current_cursor = new_current_cursor
+			if effects.fx_maps[new_cursor_bank] then effects:InitEffect() end -- registers new states if the cursor has one
 			ch:SetCursorStyle(new_cursor_bank, cfg.cursor_scl)
 		end
-
-		cfg.cursor_bank = new_cursor_bank
-		cfg.cursor_anim = new_cursor_anim
-		cfg.current_cursor = new_current_cursor
 
 		if not cfg.cc_affected then -- might as well make them tied to actual characters. when you die, your cursor also does!
 			ch:SetDeadTint(cfg.cc_current, cfg)
 		end
 		
 		if cfg.character_effects then
-			effects:ApplyEffect()
+			effects:PlayEffect()
 		end
 	end
 

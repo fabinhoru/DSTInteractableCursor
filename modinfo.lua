@@ -1,7 +1,7 @@
 name = "Interactable Cursor"
 author = "fabinhoru"
 
-actual_version = "1.9b1" -- changing things around for easier maintenance
+actual_version = "1.9b2a" -- changing things around for easier maintenance
 version_description = " - Tidying Up!"
 forumthread = "https://steamcommunity.com/sharedfiles/filedetails/?id=3399184840" -- does this work?
 
@@ -215,7 +215,7 @@ configuration_options = {
 	},
 	{
 		name = "cursorcharactereffects",
-		label = "Character Cursor VFX",
+		label = "Cursor VFX",
 		hover = "Some characters may have visual effects when using their cursor! \nPurely cosmetic.",
 		options = {
 			{description = "Enabled", hover = "Flashy!", data = true},
@@ -256,7 +256,7 @@ configuration_options = {
 	},
 	{
 		name = "cursorclickvolume",
-		label = "Cursor Clicking Volume",
+		label = "Clicking Volume",
 		hover = "For when clicking is too loud/quiet.",
 		options = {
 			{description = "0%", hover = "At this point this's placebo.", data = 0},
@@ -275,7 +275,7 @@ configuration_options = {
 	},
 	{
 		name = "cursorclicksoft",
-		label = "Cursor Clicking Sound",
+		label = "Clicking Sound",
 		hover = "Changes the sound between a clicker sound, or a softer one.",
 		options = {
 			{description = "Soft", hover = "Tock... Tock...", data = true},
@@ -295,6 +295,18 @@ configuration_options = {
 		default = false
 	},
 	Separator(),
+	SeparatorLabeled("Experimental"),
+	{
+		name = "cursoroptionspanel",
+		label = "[E] Options Panel",
+		hover = "Experimental! \nInjects a custom configuration panel directly into the settings screen.",
+		options = {
+			{description = "Enabled", hover = "Dangerous!", data = true},
+			{description = "Disabled", hover = "Normal.", data = false},
+		},
+		default = true -- oh boy
+	},
+	Separator(),
 	SeparatorLabeled("Debug"),
 	{
 		name = "cursordebugmode",
@@ -305,7 +317,7 @@ configuration_options = {
 			{description = "Disabled", hover = "Normal.", data = false},
 		},
 		default = false
-	},
+	}
 }
 
 --[[ cursor options backup before the hostile Option() takeover
